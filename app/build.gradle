@@ -7,8 +7,8 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.flamebase.chappykotlin"
-        minSdkVersion 21
+        applicationId "com.flamebase.database"
+        minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

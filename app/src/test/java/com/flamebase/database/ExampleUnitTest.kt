@@ -1,4 +1,4 @@
-package com.flamebase.chappykotlin
+package com.flamebase.database
 
 import org.junit.Test
 

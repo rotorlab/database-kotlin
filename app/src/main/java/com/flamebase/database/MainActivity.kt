@@ -1,4 +1,4 @@
-package com.flamebase.chappykotlin
+package com.flamebase.database
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
