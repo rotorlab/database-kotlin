@@ -1,4 +1,4 @@
-package com.flamebase.database;
+package com.rocketbase.database;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

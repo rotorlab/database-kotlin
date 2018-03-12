@@ -1,4 +1,4 @@
-package com.flamebase.database.interfaces;
+package com.rocketbase.database.interfaces;
 
 /**
  * Created by efraespada on 21/02/2018.

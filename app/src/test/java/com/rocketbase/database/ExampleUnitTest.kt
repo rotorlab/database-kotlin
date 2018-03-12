@@ -1,4 +1,4 @@
-package com.flamebase.database
+package com.rocketbase.database
 
 import org.junit.Test
 

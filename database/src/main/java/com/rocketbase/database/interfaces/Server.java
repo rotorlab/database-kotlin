@@ -1,4 +1,4 @@
-package com.flamebase.database.interfaces;
+package com.rocketbase.database.interfaces;
 
 import com.flamebase.core.request.CreateListener;
 import com.flamebase.core.request.RemoveListener;
