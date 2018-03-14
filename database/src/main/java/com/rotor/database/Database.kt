@@ -1,14 +1,18 @@
 package com.rotor.database
 
+import android.os.Handler
 import android.util.Log
-import com.flamebase.core.response.SyncResponse
 import com.rotor.core.Builder
 import com.rotor.core.Rotor
 import com.rotor.core.interfaces.BuilderFace
-import com.rotor.database.interfaces.Reference
+import com.rotor.database.abstr.Reference
 import com.rotor.database.models.KReference
 import com.rotor.database.models.PrimaryReferece
+import com.rotor.database.models.PrimaryReferece.Companion.ACTION_NEW_OBJECT
+import com.rotor.database.models.PrimaryReferece.Companion.EMPTY_OBJECT
+import com.rotor.database.models.PrimaryReferece.Companion.NULL
 import com.rotor.database.models.PrimaryReferece.Companion.OS
+import com.rotor.database.models.PrimaryReferece.Companion.PATH
 import com.rotor.database.request.CreateListener
 import com.rotor.database.request.RemoveListener
 import com.rotor.database.request.SyncResponse
@@ -32,17 +36,41 @@ class Database  {
         private val TAG: String = Database::class.simpleName!!
         private var pathMap: HashMap<String, KReference<Any>> ? = null
 
-        @JvmStatic fun initialize(core: Rotor) {
-            pathMap = HashMap()
+        @JvmStatic fun initialize() {
+            pathMap?.let {
+                pathMap = HashMap()
+            }
 
             Rotor.prepare(Builder.DATABASE, object: BuilderFace {
                 override fun onMessageReceived(jsonObject: JSONObject) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    try {
+                        if (jsonObject.has("data")) {
+                            val data = jsonObject.get("data") as JSONObject
+                            if (data.has("info") && data.has(PATH)) {
+                                val info = data.getString("info")
+                                val path = data.getString(PATH)
+                                if (ACTION_NEW_OBJECT.equals(info)) {
+                                    if (pathMap!!.containsKey(path)) {
+                                        val handler = Handler()
+                                        handler.postDelayed({ sync(path) }, 200)
+                                    }
+                                }
+                            } else if (data.has(PATH)) {
+                                val path = data.getString(PATH)
+                                if (pathMap!!.containsKey(path)) {
+                                    pathMap!![path]!!.onMessageReceived(data)
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                 }
             })
         }
 
-        fun <T> listener(path: String, reference: Reference<Any>, clazz: Class<T>) {
+        @JvmStatic fun listener(path: String, reference: Reference<Any>) {
             if (pathMap == null) {
                 Log.e(TAG, "Use Database.initialize(Context context, String urlServer, String token, StatusListener) before create real time references")
                 return
@@ -56,7 +84,6 @@ class Database  {
             val blowerCreation = Date().time
 
             if (pathMap!!.containsKey(path) && (Rotor.rotorService?.getMoment() as Long).equals(pathMap!!.get(path)!!.moment)) {
-
                 if (Rotor.debug!!) {
                     Log.d(TAG, "Listener already added for: $path")
                 }
@@ -65,17 +92,15 @@ class Database  {
                 return
             }
 
-
-            val objectReference = object : KReference<T>(Rotor.context!!, path, reference, clazz, Rotor!!.rotorService!!.getMoment() as Long)
-            pathMap[path] = objectReference
+            val objectReference = KReference<Any>(Rotor.context!!, path, reference, reference.clazz(), Rotor.rotorService!!.getMoment() as Long)
+            pathMap!![path] = objectReference
 
             objectReference.loadCachedReference()
 
             syncWithServer(path)
-
         }
 
-        private fun syncWithServer(path: String) {
+        @JvmStatic private fun syncWithServer(path: String) {
             var content = ReferenceUtils.getElement(path)
             if (content == null) {
                 content = PrimaryReferece.EMPTY_OBJECT
@@ -111,7 +136,7 @@ class Database  {
             })
         }
 
-        fun removeListener(path: String) {
+        @JvmStatic fun removeListener(path: String) {
             if (pathMap!!.containsKey(path)) {
                 val removeListener = RemoveListener("remove_listener", path, Rotor.id!!)
                 val call = ReferenceUtils.service(Rotor.urlServer!!).removeListener(removeListener)
@@ -140,7 +165,7 @@ class Database  {
             }
         }
 
-        private fun refreshToServer(path: String, differences: String, len: Int, clean: Boolean) {
+        @JvmStatic private fun refreshToServer(path: String, differences: String, len: Int, clean: Boolean) {
             var content = ReferenceUtils.getElement(path)
 
             if (differences == PrimaryReferece.EMPTY_OBJECT) {
@@ -180,6 +205,27 @@ class Database  {
                     }
                 }
             })
+        }
+
+        fun sync(path: String) {
+            sync(path, false)
+        }
+
+        fun sync(path: String, clean: Boolean) {
+            if (pathMap!!.containsKey(path)) {
+                val result = pathMap!![path]!!.syncReference(clean)
+                val diff = result[1] as String
+                val len = result[0] as Int
+                if (!EMPTY_OBJECT.equals(diff)) {
+                    refreshToServer(path, diff, len, clean)
+                } else {
+                    val blower = pathMap!![path]!!.getLastest()
+                    val value = pathMap!![path]!!.getReferenceAsString()
+                    if (value == null || value.equals(EMPTY_OBJECT) || value.equals(NULL)) {
+                        blower.onCreate()
+                    }
+                }
+            }
         }
     }
 

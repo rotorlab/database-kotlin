@@ -6,7 +6,6 @@ import com.rotor.core.Rotor
 import com.rotor.database.Docker
 import com.rotor.database.Docker.Companion.COLUMN_DATA
 import com.rotor.database.Docker.Companion.COLUMN_ID
-import com.rotor.database.interfaces.Server
 import com.stringcare.library.SC
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

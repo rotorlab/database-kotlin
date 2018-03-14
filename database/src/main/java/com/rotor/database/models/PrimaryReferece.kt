@@ -21,6 +21,20 @@ abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) 
     companion object {
         internal var EMPTY_OBJECT = "{}"
         internal var OS = "android"
+        internal var ACTION_SIMPLE_UPDATE = "simple_update"
+        internal var ACTION_SLICE_UPDATE = "slice_update"
+        internal var ACTION_NO_UPDATE = "no_update"
+        internal var ACTION_SIMPLE_CONTENT = "simple_content"
+        internal var ACTION_SLICE_CONTENT = "slice_content"
+        internal var ACTION_NO_CONTENT = "no_content"
+        internal var ACTION_NEW_OBJECT = "new_object"
+        internal var STAG = "tag"
+        internal var PATH = "id"
+        internal var REFERENCE = "reference"
+        internal var SIZE = "size"
+        internal var INDEX = "index"
+        internal var ACTION = "action"
+        internal var NULL = "null"
     }
 
     private val mapParts: HashMap<String, Array<String?>>
@@ -34,20 +48,6 @@ abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) 
     protected var stringReference: String? = null
 
     private val TAG = KReference::class.java!!.getSimpleName()
-    var ACTION_SIMPLE_UPDATE = "simple_update"
-    var ACTION_SLICE_UPDATE = "slice_update"
-    var ACTION_NO_UPDATE = "no_update"
-    var ACTION_SIMPLE_CONTENT = "simple_content"
-    var ACTION_SLICE_CONTENT = "slice_content"
-    var ACTION_NO_CONTENT = "no_content"
-    var ACTION_NEW_OBJECT = "new_object"
-    var STAG = "tag"
-    var PATH = "id"
-    var REFERENCE = "reference"
-    var SIZE = "size"
-    var INDEX = "index"
-    var ACTION = "action"
-    var NULL = "null"
     protected val blowerMap = HashMap<Long, T>()
 
     init {

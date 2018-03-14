@@ -2,16 +2,15 @@ package com.rotor.database.models
 
 import android.content.Context
 import com.google.common.reflect.TypeToken
-import com.rotor.database.interfaces.Reference
 import com.rotor.database.utils.ReferenceUtils
 import java.lang.reflect.Type
 
 /**
  * Created by efraespada on 14/03/2018.
  */
-open class KReference<T>(context: Context, path: String, reference: Reference<T>, clazz: Class<T>, moment: Long) : PrimaryReferece<Reference<T>>(context, path, moment) {
+class KReference<T>(context: Context, path: String, reference: Reference<T>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path, moment) {
 
-    private val clazz: Class<T>
+    private val clazz: Class<Any>
 
     init {
         blowerMap[moment] = reference
