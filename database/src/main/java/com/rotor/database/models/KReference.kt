@@ -2,6 +2,7 @@ package com.rotor.database.models
 
 import android.content.Context
 import com.google.common.reflect.TypeToken
+import com.rotor.database.abstr.Reference
 import com.rotor.database.utils.ReferenceUtils
 import java.lang.reflect.Type
 
