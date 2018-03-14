@@ -1,10 +1,10 @@
-package com.rocketbase.database.interfaces;
+package com.rotor.database.interfaces;
 
-import com.flamebase.core.request.CreateListener;
-import com.flamebase.core.request.RemoveListener;
-import com.flamebase.core.request.UpdateFromServer;
-import com.flamebase.core.request.UpdateToServer;
-import com.flamebase.core.response.SyncResponse;
+import com.rotor.database.request.CreateListener;
+import com.rotor.database.request.RemoveListener;
+import com.rotor.database.request.SyncResponse;
+import com.rotor.database.request.UpdateFromServer;
+import com.rotor.database.request.UpdateToServer;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

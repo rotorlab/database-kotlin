@@ -1,4 +1,4 @@
-package com.flamebase.core.request
+package com.rotor.database.request
 
 import com.google.gson.annotations.SerializedName
 

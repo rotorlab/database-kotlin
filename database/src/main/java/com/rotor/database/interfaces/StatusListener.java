@@ -1,4 +1,4 @@
-package com.rocketbase.database.interfaces;
+package com.rotor.database.interfaces;
 
 /**
  * Created by efraespada on 21/02/2018.

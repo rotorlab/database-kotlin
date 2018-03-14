@@ -1,4 +1,4 @@
-package com.rocketbase.database.interfaces;
+package com.rotor.database.interfaces;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
  * Created by efraespada on 29/06/2017.
  */
 
-public interface Blower<T> {
+public interface Reference<T> {
 
     void onCreate();
 
