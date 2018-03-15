@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 /**
  * Created by efraespada on 14/03/2018.
  */
-class KReference<T>(context: Context, path: String, reference: Reference<*>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path, moment) {
+class KReference<T>(context: Context, path: String, reference: Reference<*>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path) {
 
     private val clazz: Class<Any>
 
@@ -42,7 +42,7 @@ class KReference<T>(context: Context, path: String, reference: Reference<*>, cla
     }
 
     override fun getReferenceAsString(): String {
-        var value: String ? = null
+        var value: String ?
         if (getLastest().onUpdate() == null) {
             if (stringReference != null && stringReference!!.length > EMPTY_OBJECT.length) {
                 value = stringReference

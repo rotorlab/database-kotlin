@@ -16,7 +16,7 @@ import java.util.HashMap
 /**
  * Created by efraespada on 14/03/2018.
  */
-abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) {
+abstract class PrimaryReferece<T>(context: Context, path: String) {
 
     companion object {
         internal var EMPTY_OBJECT = "{}"
@@ -47,7 +47,7 @@ abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) 
     protected var path: String
     protected var stringReference: String? = null
 
-    private val TAG = KReference::class.java!!.getSimpleName()
+    private val TAG = KReference::class.java.simpleName
     protected val blowerMap = HashMap<Long, T>()
 
     init {
@@ -107,7 +107,6 @@ abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) 
 
     fun syncReference(clean: Boolean): Array<Any?> {
         val len: Int
-        val gson = Gson()
         val objects = arrayOfNulls<Any>(2)
 
         if (clean || stringReference == null) {

@@ -13,6 +13,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "database_url", "\"http://10.0.2.2:1507/\""
         buildConfigField "String", "redis_url", "\"redis://10.0.2.2\""
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -30,7 +31,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.rotor:core:0.0.5'
+    implementation 'com.rotor:core:0.0.8'
     implementation project(":database")
     implementation 'com.google.code.gson:gson:2.8.2'
 

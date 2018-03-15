@@ -33,7 +33,7 @@ class Database  {
 
     companion object {
 
-        private val TAG: String = Database::class.simpleName!!
+        private val TAG: String = Database::class.java.simpleName!!
         private var pathMap: HashMap<String, KReference<*>> ? = null
 
         @JvmStatic fun initialize() {
@@ -166,19 +166,12 @@ class Database  {
         }
 
         @JvmStatic private fun refreshToServer(path: String, differences: String, len: Int, clean: Boolean) {
-            var content = ReferenceUtils.getElement(path)
-
             if (differences == PrimaryReferece.EMPTY_OBJECT) {
                 Log.e(TAG, "no differences: $differences")
                 return
             } else {
                 Log.d(TAG, "differences: $differences")
             }
-
-            if (content == null) {
-                content = PrimaryReferece.EMPTY_OBJECT
-            }
-            val sha1 = "" //ReferenceUtils.SHA1(content)
 
             val updateToServer = UpdateToServer("update_data", path, Rotor.id!!, "android", differences, len, clean)
             val call = ReferenceUtils.service(Rotor.urlServer!!).refreshToServer(updateToServer)
@@ -207,11 +200,11 @@ class Database  {
             })
         }
 
-        fun sync(path: String) {
+        @JvmStatic fun sync(path: String) {
             sync(path, false)
         }
 
-        fun sync(path: String, clean: Boolean) {
+        @JvmStatic fun sync(path: String, clean: Boolean) {
             if (pathMap!!.containsKey(path)) {
                 val result = pathMap!![path]!!.syncReference(clean)
                 val diff = result[1] as String
@@ -221,7 +214,7 @@ class Database  {
                 } else {
                     val blower = pathMap!![path]!!.getLastest()
                     val value = pathMap!![path]!!.getReferenceAsString()
-                    if (value == null || value.equals(EMPTY_OBJECT) || value.equals(NULL)) {
+                    if (value.equals(EMPTY_OBJECT) || value.equals(NULL)) {
                         blower.onCreate()
                     }
                 }

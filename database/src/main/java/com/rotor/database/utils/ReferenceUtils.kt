@@ -41,9 +41,9 @@ class ReferenceUtils {
                 if (exist(path)) {
                     val selection = COLUMN_ID + " = ?"
                     val selectionArgs = arrayOf<String>(enId)
-                    val newRowId = db.update(docker!!.table, values, selection, selectionArgs).toLong()
+                    db.update(docker!!.table, values, selection, selectionArgs).toLong()
                 } else {
-                    val newRowId = db.insert(docker!!.table, null, values)
+                    db.insert(docker!!.table, null, values)
                 }
             } catch (e: SQLiteException) {
                 e.printStackTrace()
@@ -100,7 +100,7 @@ class ReferenceUtils {
                 val selection = "$COLUMN_ID = ?"
                 val selectionArgs = arrayOf(enPath)
 
-                val result = db.delete(
+                db.delete(
                         docker!!.table, // The table to query
                         selection, // The columns for the WHERE clause
                         selectionArgs                            // The values for the WHERE clause
