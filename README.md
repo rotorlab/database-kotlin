@@ -1,4 +1,4 @@
-<p align="center"><img width="30%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
+<p align="center"><img width="30%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"></p>
 
 # Rotor Database
 
@@ -32,7 +32,7 @@ Listen object changes:
 ```java
 ObjectA objectA = null;
   
-Rotor.listener(path, new Reference<ObjectA>() {
+Database.listener(path, new Reference<ObjectA>() {
     
     /**
     * called when listener is created on server, there is nothing stored
@@ -76,7 +76,7 @@ Rotor.listener(path, new Reference<ObjectA>() {
 ```
 Remove listener in server by calling `removeListener()`
 ```java
-Rotor.removeListener(path);
+Database.removeListener(path);
 ```
 
 Chappy: quick sample of real-time changes
@@ -120,7 +120,7 @@ private Chat chat;
     
     /* object instances, list adapter, etc.. */
     
-    Rotor.listener(path, new Reference<Chat>() {
+    Database.listener(path, new Reference<Chat>() {
     
         @Override public void onCreate() {
             chat = new Chat();
