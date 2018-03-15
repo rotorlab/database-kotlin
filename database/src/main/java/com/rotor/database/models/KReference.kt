@@ -9,12 +9,12 @@ import java.lang.reflect.Type
 /**
  * Created by efraespada on 14/03/2018.
  */
-class KReference<T>(context: Context, path: String, reference: Reference<T>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path, moment) {
+class KReference<T>(context: Context, path: String, reference: Reference<*>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path, moment) {
 
     private val clazz: Class<Any>
 
     init {
-        blowerMap[moment] = reference
+        blowerMap[moment] = reference as Reference<T>
         this.clazz = clazz
     }
 
@@ -37,8 +37,8 @@ class KReference<T>(context: Context, path: String, reference: Reference<T>, cla
         }
     }
 
-    override fun addBlower(creation: Long, blower: Reference<T>) {
-        blowerMap[creation] = blower
+    fun addBlower(creation: Long, blower: Reference<*>) {
+        blowerMap[creation] = blower as Reference<T>
     }
 
     override fun getReferenceAsString(): String {

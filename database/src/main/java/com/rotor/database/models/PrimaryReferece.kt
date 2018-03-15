@@ -68,7 +68,7 @@ abstract class PrimaryReferece<T>(context: Context, path: String, moment: Long) 
 
     abstract fun progress(value: Int)
 
-    abstract fun addBlower(creation: Long, blower: T)
+    // abstract fun addBlower(creation: Long, blower: *)
 
     /**
      * tag or identifier used to identify incoming object updates

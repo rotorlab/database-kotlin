@@ -1,33 +1,21 @@
+<p align="center"><img width="30%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 # Rotor Database
 
-Work with synchronized java objects stored as JSON objects. Check a sample above (Chappy app).
 
-### What is this?
-Flamebase is an open source project that tries to emulate Firebase Database features as much as possible. In this repo you can find the proper lib for android client.
-For now it still developing, so please be patient with errors.
-
-### Requirements
-**1º redis-server:** Amazing Pub/Sub engine for real-time changes. Simply install and start it.
-
-**2º flamebase-server:** It will be our server cluster for storing json objects. Server cluster is run with **node** framework.
-
-Check out [flamebase-server repo](https://github.com/flamebase/flamebase-server) for more information.
 
 ### Usage
 - Import library:
 
 ```groovy
 android {
- 
     defaultConfig {
         multiDexEnabled true
     }
-    
 }
  
 dependencies {
-    implementation 'com.flamebase:database:1.6.1'
+    implementation 'com.rotor:database:0.0.1'
     implementation 'com.efraespada:jsondiff:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -36,31 +24,15 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 }
 ```
-- Initialize library:
+- Initialize database module after Rotor initialization:
 ```java
-// redis ips starts with redis://, port is not included
-FlamebaseDatabase.initialize(getApplicationContext(), "http://10.0.2.2:1507/", "redis://10.0.2.2", new StatusListener() {
- 
-    @Override
-    public void connected() {
-        /* fired only when initialized method is called and library is connected to redis */
-    }
-    
-    @Override
-    public void reconnecting() {
-        /* library is trying to connect to redis */
-    }
- 
-});
- 
-// debug logs
-FlamebaseDatabase.setDebug(true);
+Database.initialize()
 ```
-- Listener for objects:
+Listen object changes:
 ```java
 ObjectA objectA = null;
   
-FlamebaseDatabase.listener(path, new ObjectBlower<ObjectA>() {
+Rotor.listener(path, new Reference<ObjectA>() {
     
     /**
     * called when listener is created on server, there is nothing stored
@@ -100,123 +72,11 @@ FlamebaseDatabase.listener(path, new ObjectBlower<ObjectA>() {
         Log.e(TAG, "loading " + path + " : " + value + " %");
     }
  
-}, ObjectA.class);
+});
 ```
-- Listener for maps:
+Remove listener in server by calling `removeListener()`
 ```java
-Map<String, Member> contacts = null;
- 
-FlamebaseDatabase.listener(path, new MapBlower<Member>() {
-   
-    @Override
-    public void onCreate() {
-        contacts = new HashMap<String, Member>();
-        // add a member
-        
-        // sync with server
-        FlamebaseDatabase.sync(path);
-    }
-    
-    @Override
-    public void onChanged(Map<String, Member> ref) {
-        contacts = ref;
-    }
-    
-    @Override
-    public Map<String, Member> onUpdate() {
-        return contacts;
-    }
- 
-    @Override
-    public void progress(int value) {
-        
-    }
-  
-}, Member.class);
-```
-- Remove listener in server by calling:
-```java
-FlamebaseDatabase.removeListener(path);
-```
-
-Background updates (not optional)
-------------------
-Flamebase Database library works in background in order to receive updates when application is on background or foreground. You must add FlamebaseService to your `AndroidManifest.xml` file:
-```xml
-<application>
- 
-    <service
-        android:name="com.flamebase.database.FlamebaseService"
-        android:enabled="true"
-        android:exported="true" />
- 
-</application>
-```
-This service is controlled when the application is present and must be `bind` or `unbind`. Add in activities:
-```java
-@Override
-protected void onResume() {
-    super.onResume();
-    FlamebaseDatabase.onResume();
-}
- 
-@Override
-protected void onPause() {
-    FlamebaseDatabase.onPause();
-    super.onPause();
-}
-```
-In the sample app chats still receiving updates on background, when the application is reopened there is no need to ask for updates.
-
-Limitations 
------------
-**List objects aren't supported:** List objects gives problems when differences are being generated. If you plan to store iterations you can dispose a map object with the object types you want:
-```json
-{
-    "0": 1,
-    "1": "item2",
-    "2": {
-        "title": "title 3",
-        "body": "body 3",
-        "delay": 3
-    }
-}
-```
-
-Kotlin support
---------------
-Flamebase Database works with Kotlin applications too. You must use `KotlinBlowers` to solve Gson deserialization problem:
-```kotlin
-data class Chat(@SerializedName("id") val id: String,
-                @SerializedName("name") val name: String,
-                @SerializedName("creationDate") val creationDate: Long,
-                @SerializedName("members") val members: Map<String, Member>)
- 
-FlamebaseDatabase.listener(path, object : KotlinObjectBlower<Chat>() {
- 
-    override fun onCreate() {
-        
-    }
- 
-    override fun source(value: String?) {
-        val gson = Gson()
-        profile = gson.fromJson(value, Data.Profile::class.java)
-    }
- 
-    override fun string(): String? {
-        if (profile == null) {
-            return null
-        } else {
-            val gson = Gson()
-            gson.toJson(profile)
-        }
-    }
-    
-    override fun progress(value: Int) {
-        /* */
-    }
- 
-}, Chat::class.java)
+Rotor.removeListener(path);
 ```
 
 Chappy: quick sample of real-time changes
@@ -260,7 +120,7 @@ private Chat chat;
     
     /* object instances, list adapter, etc.. */
     
-    FlamebaseDatabase.listener(path, new ObjectBlower<Chat>() {
+    Rotor.listener(path, new Reference<Chat>() {
     
         @Override public void onCreate() {
             chat = new Chat();
@@ -306,7 +166,7 @@ private Chat chat;
             // print progress
         }
     
-    }, Chat.class);
+    });
      
     sendButton.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {

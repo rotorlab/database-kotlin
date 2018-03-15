@@ -34,7 +34,7 @@ class Database  {
     companion object {
 
         private val TAG: String = Database::class.simpleName!!
-        private var pathMap: HashMap<String, KReference<Any>> ? = null
+        private var pathMap: HashMap<String, KReference<*>> ? = null
 
         @JvmStatic fun initialize() {
             pathMap?.let {
@@ -70,7 +70,7 @@ class Database  {
             })
         }
 
-        @JvmStatic fun listener(path: String, reference: Reference<Any>) {
+        @JvmStatic fun <T> listener(path: String, reference: Reference<T>) {
             if (pathMap == null) {
                 Log.e(TAG, "Use Database.initialize(Context context, String urlServer, String token, StatusListener) before create real time references")
                 return
@@ -92,7 +92,7 @@ class Database  {
                 return
             }
 
-            val objectReference = KReference<Any>(Rotor.context!!, path, reference, reference.clazz(), Rotor.rotorService!!.getMoment() as Long)
+            val objectReference = KReference<T>(Rotor.context!!, path, reference, reference.clazz(), Rotor.rotorService!!.getMoment() as Long)
             pathMap!![path] = objectReference
 
             objectReference.loadCachedReference()
