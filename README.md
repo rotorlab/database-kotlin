@@ -15,6 +15,7 @@ android {
 }
  
 dependencies {
+    implementation 'com.rotor:core:0.0.5'
     implementation 'com.rotor:database:0.0.1'
     implementation 'com.efraespada:jsondiff:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -26,6 +27,7 @@ dependencies {
 ```
 Initialize database module after Rotor initialization:
 ```java
+Rotor.initialize(...)
 Database.initialize()
 ```
 Listen object changes:
