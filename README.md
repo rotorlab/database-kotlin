@@ -1,11 +1,11 @@
-<p align="center"><img width="15%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"></p>
+<p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"></p>
 
 # Rotor Database
 
 
 
 ### Usage
-- Import library:
+Import library:
 
 ```groovy
 android {
@@ -24,7 +24,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 }
 ```
-- Initialize database module after Rotor initialization:
+Initialize database module after Rotor initialization:
 ```java
 Database.initialize()
 ```
