@@ -38,8 +38,8 @@ Rotor.initialize(...)
 Database.initialize()
 ```
 ## Listen shared object changes
-Database allows devices to work with the same objects by listening the same path. When an object is listened, library says to Rotor Server your device is waiting for changes on that path, so every time any device makes a change on tha path (object), the differences are calculated and replicated on all devices listening.
-For that we have `listen()` method which has an easy **object lifecycle interface** for control every object state.
+Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
+For that we have `listen` method which has an easy **object lifecycle interface** for control every object state.
 
 - onCreate: Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
 ```java
