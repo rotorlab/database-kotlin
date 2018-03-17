@@ -17,7 +17,7 @@ abstract class Reference<T>(clazz: Class<T>) {
     abstract fun onCreate()
 
     @Nullable
-    abstract fun onUpdate() : T
+    abstract fun onUpdate() : T ?
 
     abstract fun onChanged(@NonNull ref: T)
 

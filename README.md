@@ -2,7 +2,7 @@
 
 # Rotor Database
 
-
+Database module for Rotor
 
 ### Usage
 Import library:
@@ -37,6 +37,20 @@ Database.initialize()
 ```
 Listen object changes:
 ```java
+// java
+class ObjectA {
+    String value;
+    public ObjectA(String value) {
+        this.value = value;
+    }
+    public void setValue(String value) {
+        this.value = vaue;
+    }
+    public void getValue() {
+        return value;
+    }
+}
+ 
 ObjectA objectA = null;
   
 Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
@@ -47,8 +61,7 @@ Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
     */
     @Override
     public void onCreate() {
-        objectA = new ObjectA();
-        objectA.setValue("foo");
+        objectA = new ObjectA("foo");
         
         // sync with server
         Database.sync(path);
@@ -59,8 +72,9 @@ Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
     * or is ready to be used.
     */
     @Override
-    public void onChanged(ObjectA ref) {
-        objectA = ref;  
+    public void onChanged(ObjectA objectA) {
+        this.objectA = objectA;  
+        // notify change on UI
     }
     
     /**
@@ -81,120 +95,39 @@ Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
  
 });
 ```
+
+```kotlin
+// kotlin
+
+data class ObjectA(var value: String)
+var path = "myObjects/objectA"
+var objectA: ObjectA ? = null
+Database.listener(path, object: Reference<ObjectA>(ObjectA::class.java) {
+    override fun onCreate() {
+        objectA = ObjectA("foo")
+        
+        // sync with server
+        Database.sync(path);
+    }
+ 
+    override fun onUpdate(): ObjectA ? {
+        return objectA
+    }
+ 
+    override fun onChanged(ref: ObjectA) {
+        this@MainActivity.objectA = objectA
+        // notify change on UI
+    }
+ 
+    override fun progress(value: Int) {
+        Log.e("rotor", "loading " + path + " -> " + value + " %")
+    }
+})
+```
 Remove listener in server by calling `removeListener()`
 ```java
 Database.removeListener(path);
 ```
-
-Chappy: quick sample of real-time changes
--------------------------------------------
-<p align="center"><img width="10%" vspace="20" src="https://github.com/flamebase/flamebase-database-android/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_rounded.png"></p>
- 
-Imagine define some simple objects and share it between other devices by paths (`/chats/welcome_chat`):
- 
-```java
-public class Chat {
-
-    @SerializedName("name")
-    @Expose
-    String name;
-
-    @SerializedName("members")
-    @Expose
-    Map<String, Member> members;
-
-    @SerializedName("messages")
-    @Expose
-    Map<String, Message> messages;
-
-    public Chat(String name, Map<String, Member> members, Map<String, Message> messages) {
-        this.name = name;
-        this.members = members;
-        this.messages = messages;
-    }
-    
-    /* getter and setter methods */
-    
-}
-```
-Define a chat listener and add messages:
-```java
-private Chat chat;
-
-@Override protected void onCreate(Bundle savedInstanceState) {
-    
-    final String path = "/chats/welcome_chat";
-    
-    /* object instances, list adapter, etc.. */
-    
-    Database.listener(path, new Reference<Chat>(Chat.class) {
-    
-        @Override public void onCreate() {
-            chat = new Chat();
-            chat.setTitle("Foo Chat");
-            
-            // sync with server
-            FlamebaseDatabase.sync(path);
-        }
-            
-        @Override public Chat onUpdate() {
-            return chat;
-        }
-    
-        @Override public void onChanged(Chat chat) {
-            chat = ref;
-            
-            // update screent title
-            ChatActivity.this.setTitle(chat.getName());
-            
-            // order messages
-            Map<String, Message> messageMap = new TreeMap<>(new Comparator<String>() {
-                @Override public int compare(String o1, String o2) {
-                    Long a = Long.valueOf(o1);
-                    Long b = Long.valueOf(o2);
-                    if (a > b) {
-                        return 1;
-                    } else if (a < b) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-            });
-            messageMap.putAll(chat.getMessages());
-            chat.setMessages(messageMap);
-    
-            // update list
-            messageList.getAdapter().notifyDataSetChanged();
-            messageList.smoothScrollToPosition(0);
-        }
-    
-        @Override public void progress(int value) {
-            // print progress
-        }
-    
-    });
-     
-    sendButton.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-            SharedPreferences prefs = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-            String username = prefs.getString("username", null);
-            if (name != null) {
-                Message message = new Message(username, messageText.getText().toString());
-                chat.getMessages().put(String.valueOf(new Date().getTime()), message);
-        
-                FlamebaseDatabase.sync(path);
-        
-                messageText.setText("");
-            }
-        }
-    });
-}
-```
-You can do changes or wait for them. All devices listening the same object will receive this changes to stay up to date:
- 
-<p align="center"><img width="30%" vspace="20" src="https://github.com/flamebase/flamebase-database-android/raw/develop/sample1.png"></p>
-
 
 License
 -------

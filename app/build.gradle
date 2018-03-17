@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName rotor_version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "database_url", "\"http://10.0.2.2:1507/\""
         buildConfigField "String", "redis_url", "\"redis://10.0.2.2\""
