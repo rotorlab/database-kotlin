@@ -5,7 +5,7 @@
 Database module for Rotor
 
 ### Usage
-Import library:
+Import libraries:
 
 ```groovy
 android {
@@ -13,21 +13,16 @@ android {
         multiDexEnabled true
     }
 }
- 
+
+def rotor_version =  "0.1.0"
+
 dependencies {
-    implementation "com.rotor:core:$rotor_version"
-    implementation "com.rotor:database:$rotor_version"
-    
-    // database dependencies
-    implementation 'com.efraespada:jsondiff:1.1.0'
-    implementation "com.squareup.retrofit2:retrofit:2.3.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
-    implementation 'com.google.code.findbugs:jsr305:2.0.1'
-    implementation 'com.google.guava:guava:22.0-android'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.stringcare:library:0.7"
+    implementation ("com.rotor:core:$rotor_version@aar") {
+            transitive = true
+    }
+    implementation ("com.rotor:database:$rotor_version@aar") {
+        transitive = true
+    }
 }
 ```
 Initialize database module after Rotor initialization:
@@ -35,9 +30,45 @@ Initialize database module after Rotor initialization:
 Rotor.initialize(...)
 Database.initialize()
 ```
-Listen object changes:
+Listen shared object changes
+----------------------------
+Database allows devices to work with the same objects by listening the same path. When an object is listened, library says to Rotor Server your device is waiting for changes on that path, so every time any device makes a change on tha path (object), the differences are calculated and replicated on all devices listening.
+For that we have listen() method which has an easy object lifecycle interface for control every object state.
+
+- onCreate: Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, onChange method will be called insted.
+```java
+@Override
+public void onCreate() {
+    objectA = new ObjectA("foo");
+    Database.sync(path);
+}
+```
+- onChanged: Called in two situations, when some device has made changes on the same object and when listen method is called and the object is cached. Database library pass as parameter the object up to date.
+```java
+@Override
+public void onChanged(ObjectA objectA) {
+    this.objectA = objectA;  
+    // notify change on UI
+}
+```
+- onUpdate: Called when sync method is invoked. Differences with the last "fresh" object passed by library are calculated and sent to server.
+```java
+@Override
+public ObjectA onUpdate() {
+    return objectA;
+}
+```
+- progress: Some object updates can become too big, so server slices updates and sends them sequentially. value parameter goes from 0 to 100
+```java
+@Override
+public void progress(int value) {
+    Log.e(TAG, "loading " + path + " : " + value + " %");
+}
+```
+
 ```java
 // java
+
 class ObjectA {
     String value;
     public ObjectA(String value) {
@@ -51,48 +82,31 @@ class ObjectA {
     }
 }
  
+String path = "myObjects/objectA";
 ObjectA objectA = null;
   
-Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
-    
-    /**
-    * called when listener is created on server, there is nothing stored
-    * on db on the given path and onUpdate() still returning null
-    */
+Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
     @Override
     public void onCreate() {
         objectA = new ObjectA("foo");
-        
-        // sync with server
         Database.sync(path);
     }
     
-    /**
-    * called after reference is synchronized with server
-    * or is ready to be used.
-    */
     @Override
     public void onChanged(ObjectA objectA) {
         this.objectA = objectA;  
         // notify change on UI
     }
     
-    /**
-    * gets new differences from local object
-    */
     @Override
     public ObjectA onUpdate() {
         return objectA;
     }
  
-    /**
-    * long server updates, from 0 to 100
-    */
     @Override
     public void progress(int value) {
         Log.e(TAG, "loading " + path + " : " + value + " %");
     }
- 
 });
 ```
 
@@ -102,7 +116,7 @@ Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
 data class ObjectA(var value: String)
 var path = "myObjects/objectA"
 var objectA: ObjectA ? = null
-Database.listener(path, object: Reference<ObjectA>(ObjectA::class.java) {
+Database.listen(path, object: Reference<ObjectA>(ObjectA::class.java) {
     override fun onCreate() {
         objectA = ObjectA("foo")
         
@@ -131,7 +145,7 @@ Database.removeListener(path);
 
 License
 -------
-    Copyright 2018 Efraín Espada
+    Copyright 2018 RotorLab Organization
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

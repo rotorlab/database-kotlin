@@ -70,7 +70,7 @@ class Database  {
             })
         }
 
-        @JvmStatic fun <T> listener(path: String, reference: Reference<T>) {
+        @JvmStatic fun <T> listen(path: String, reference: Reference<T>) {
             if (pathMap == null) {
                 Log.e(TAG, "Use Database.initialize(Context context, String urlServer, String token, StatusListener) before create real time references")
                 return

@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         Database.initialize()
 
-        Database.listener("chat", object: Reference<Chat>(Chat::class.java) {
+        Database.listen("chat", object: Reference<Chat>(Chat::class.java) {
 
             override fun onCreate() {
 
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        Database.listener("", object: Reference<ObjectA>(ObjectA::class.java) {
+        Database.listen("", object: Reference<ObjectA>(ObjectA::class.java) {
             override fun onCreate() {
                 objectA = ObjectA("foo")
             }
