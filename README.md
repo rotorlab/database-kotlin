@@ -51,7 +51,7 @@ Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
         objectA.setValue("foo");
         
         // sync with server
-        FlamebaseDatabase.sync(path);
+        Database.sync(path);
     }
     
     /**
