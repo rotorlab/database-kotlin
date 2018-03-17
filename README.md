@@ -39,7 +39,7 @@ Database.initialize()
 ```
 ## Listen shared object changes
 Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
-For that we have `listen` method which has an easy **object lifecycle interface** for control every object state.
+For that we have `Databas.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
 
 - onCreate: Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
 ```java
@@ -71,7 +71,15 @@ public void progress(int value) {
     Log.e(TAG, "loading " + path + " : " + value + " %");
 }
 ```
-
+After work with objects, changes must be synchronized with servers. Call `Database.sync(path)` method to sync it.
+```java
+Database.sync("myObjects/objectA");
+```
+Remove listener in server by calling `Database.removeListener(path)`
+```java
+Database.removeListener(path);
+```
+Samples:
 ```java
 // java
 
@@ -141,10 +149,6 @@ Database.listen(path, object: Reference<ObjectA>(ObjectA::class.java) {
         Log.e("rotor", "loading " + path + " -> " + value + " %")
     }
 })
-```
-Remove listener in server by calling `removeListener()`
-```java
-Database.removeListener(path);
 ```
 
 License
