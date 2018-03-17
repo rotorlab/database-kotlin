@@ -1,14 +1,12 @@
 package com.rotor.database.request
 
-import com.google.gson.annotations.SerializedName
-
 /**
  * Created by efraespada on 11/03/2018.
  */
 
-data class CreateListener(@SerializedName("method") val method: String,
-                          @SerializedName("path") val path: String,
-                          @SerializedName("token") val token: String,
-                          @SerializedName("os") val os: String,
-                          @SerializedName("sha1") val sha1: String,
-                          @SerializedName("len") val len: Int)
+data class CreateListener(val method: String,
+                          val path: String,
+                          val token: String,
+                          val os: String,
+                          val sha1: String,
+                          val len: Int)

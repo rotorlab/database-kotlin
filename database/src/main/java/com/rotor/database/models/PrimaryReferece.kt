@@ -11,7 +11,7 @@ import com.stringcare.library.SC
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.Normalizer
-import java.util.HashMap
+import java.util.*
 
 /**
  * Created by efraespada on 14/03/2018.

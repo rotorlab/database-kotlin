@@ -9,13 +9,13 @@ import java.lang.reflect.Type
 /**
  * Created by efraespada on 14/03/2018.
  */
-class KReference<T>(context: Context, path: String, reference: Reference<*>, clazz: Class<Any>, moment: Long) : PrimaryReferece<Reference<T>>(context, path) {
+class KReference<T>(context: Context, path: String, reference: Reference<*>, moment: Long) : PrimaryReferece<Reference<T>>(context, path) {
 
-    private val clazz: Class<Any>
+    private val clazz: Class<T>
 
     init {
         blowerMap[moment] = reference as Reference<T>
-        this.clazz = clazz
+        this.clazz = reference.clazz()
     }
 
     override fun getLastest(): Reference<T> {

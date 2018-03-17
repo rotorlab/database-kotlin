@@ -1,7 +1,7 @@
 package com.rotor.database.interfaces
 
 import com.rotor.database.request.*
-import retrofit2.Call
+import io.reactivex.Observable
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -9,22 +9,22 @@ import retrofit2.http.POST
 /**
  * Created by efraespada on 14/03/2018.
  */
-abstract class Server {
+interface Server {
 
     @Headers("Content-Type: application/json")
     @POST("/")
-    abstract fun createReference(@Body createListener: CreateListener): Call<SyncResponse>
+    fun createReference(@Body createListener: CreateListener) : Observable<SyncResponse>
 
     @Headers("Content-Type: application/json")
     @POST("/")
-    abstract fun removeListener(@Body removeListener: RemoveListener): Call<SyncResponse>
+    fun removeListener(@Body removeListener: RemoveListener) : Observable<SyncResponse>
 
     @Headers("Content-Type: application/json")
     @POST("/")
-    abstract fun refreshFromServer(@Body updateFromServer: UpdateFromServer): Call<SyncResponse>
+    fun refreshFromServer(@Body updateFromServer: UpdateFromServer) : Observable<SyncResponse>
 
     @Headers("Content-Type: application/json")
     @POST("/")
-    abstract fun refreshToServer(@Body updateToServer: UpdateToServer): Call<SyncResponse>
+    fun refreshToServer(@Body updateToServer: UpdateToServer) : Observable<SyncResponse>
 
 }

@@ -8,11 +8,10 @@ import com.rotor.database.Docker.Companion.COLUMN_DATA
 import com.rotor.database.Docker.Companion.COLUMN_ID
 import com.rotor.database.interfaces.Server
 import com.stringcare.library.SC
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigInteger
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by efraespada on 14/03/2018.
@@ -166,18 +165,11 @@ class ReferenceUtils {
         }
 
         fun service(url: String): Server {
-            val httpClient = OkHttpClient.Builder()
-                    .connectTimeout(120, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
-                    .writeTimeout(120, TimeUnit.SECONDS)
-                    .addInterceptor { chain ->
-                        // TODO intercept time out exceptions
-                        chain.proceed(chain.request())
-                    }
-
-            val builder = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create())
-
-            val retrofit = builder.client(httpClient.build()).build()
+            val retrofit = Retrofit.Builder()
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .baseUrl(url)
+                    .build()
 
             return retrofit.create(Server::class.java)
         }

@@ -1,4 +1,4 @@
-<p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"></p>
+<p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 # Rotor Database
 
@@ -15,14 +15,19 @@ android {
 }
  
 dependencies {
-    implementation 'com.rotor:core:0.0.5'
-    implementation 'com.rotor:database:0.0.1'
+    implementation "com.rotor:core:$rotor_version"
+    implementation "com.rotor:database:$rotor_version"
+    
+    // database dependencies
     implementation 'com.efraespada:jsondiff:1.1.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation "com.squareup.retrofit2:retrofit:2.3.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
     implementation 'com.google.code.findbugs:jsr305:2.0.1'
     implementation 'com.google.guava:guava:22.0-android'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.stringcare:library:0.7"
 }
 ```
 Initialize database module after Rotor initialization:
@@ -34,7 +39,7 @@ Listen object changes:
 ```java
 ObjectA objectA = null;
   
-Database.listener(path, new Reference<ObjectA>() {
+Database.listener(path, new Reference<ObjectA>(ObjectA.class) {
     
     /**
     * called when listener is created on server, there is nothing stored
@@ -122,7 +127,7 @@ private Chat chat;
     
     /* object instances, list adapter, etc.. */
     
-    Database.listener(path, new Reference<Chat>() {
+    Database.listener(path, new Reference<Chat>(Chat.class) {
     
         @Override public void onCreate() {
             chat = new Chat();
@@ -136,7 +141,7 @@ private Chat chat;
             return chat;
         }
     
-        @Override public void onChanged(Chat ref) {
+        @Override public void onChanged(Chat chat) {
             chat = ref;
             
             // update screent title

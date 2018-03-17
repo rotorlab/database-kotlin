@@ -15,14 +15,11 @@ import com.rotor.database.models.PrimaryReferece.Companion.OS
 import com.rotor.database.models.PrimaryReferece.Companion.PATH
 import com.rotor.database.request.CreateListener
 import com.rotor.database.request.RemoveListener
-import com.rotor.database.request.SyncResponse
 import com.rotor.database.request.UpdateToServer
 import com.rotor.database.utils.ReferenceUtils
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.IOException
 import java.util.*
 
 
@@ -35,9 +32,12 @@ class Database  {
 
         private val TAG: String = Database::class.java.simpleName!!
         private var pathMap: HashMap<String, KReference<*>> ? = null
+        val api by lazy {
+            ReferenceUtils.service(Rotor.urlServer!!)
+        }
 
         @JvmStatic fun initialize() {
-            pathMap?.let {
+            pathMap.let {
                 pathMap = HashMap()
             }
 
@@ -92,7 +92,7 @@ class Database  {
                 return
             }
 
-            val objectReference = KReference<T>(Rotor.context!!, path, reference, reference.clazz(), Rotor.rotorService!!.getMoment() as Long)
+            val objectReference = KReference<T>(Rotor.context!!, path, reference, Rotor.rotorService!!.getMoment() as Long)
             pathMap!![path] = objectReference
 
             objectReference.loadCachedReference()
@@ -109,59 +109,28 @@ class Database  {
             // val sha1 = ReferenceUtils.SHA1(content)
             val sha1 = ""
 
+
             val createListener = CreateListener("create_listener", path, Rotor.id!!, OS, sha1, content.length)
 
-            val call = ReferenceUtils.service(Rotor.urlServer!!).createReference(createListener)
-            call.enqueue(object : Callback<SyncResponse> {
-
-                override fun onResponse(call: Call<SyncResponse>, response: Response<SyncResponse>) {
-                    if (response.errorBody() != null && !response.isSuccessful()) {
-                        try {
-                            Log.e(TAG, response.errorBody()!!.string())
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                    }
-                }
-
-                override fun onFailure(call: Call<SyncResponse>, t: Throwable) {
-                    if (t.stackTrace != null) {
-                        Log.e(TAG, "error")
-                        t.printStackTrace()
-                    } else {
-                        Log.e(TAG, "create listener response error")
-                    }
-                }
-            })
+            val disposable = api.createReference(createListener)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            { result -> Log.e(TAG, result.status) },
+                            { error -> error.printStackTrace() }
+                    )
         }
 
         @JvmStatic fun removeListener(path: String) {
             if (pathMap!!.containsKey(path)) {
                 val removeListener = RemoveListener("remove_listener", path, Rotor.id!!)
-                val call = ReferenceUtils.service(Rotor.urlServer!!).removeListener(removeListener)
-                call.enqueue(object : Callback<SyncResponse> {
-
-                    override fun onResponse(call: Call<SyncResponse>, response: Response<SyncResponse>) {
-                        if (response.errorBody() != null && !response.isSuccessful()) {
-                            try {
-                                Log.e(TAG, response.errorBody()!!.string())
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                            }
-
-                        }
-                    }
-
-                    override fun onFailure(call: Call<SyncResponse>, t: Throwable) {
-                        if (t.stackTrace != null) {
-                            Log.e(TAG, "error")
-                            t.printStackTrace()
-                        } else {
-                            Log.e(TAG, "remove listener response error")
-                        }
-                    }
-                })
+                val disposable = api.removeListener(removeListener)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result -> Log.e(TAG, result.status) },
+                                { error -> error.printStackTrace() }
+                        )
             }
         }
 
@@ -174,30 +143,13 @@ class Database  {
             }
 
             val updateToServer = UpdateToServer("update_data", path, Rotor.id!!, "android", differences, len, clean)
-            val call = ReferenceUtils.service(Rotor.urlServer!!).refreshToServer(updateToServer)
-
-            call.enqueue(object : Callback<SyncResponse> {
-
-                override fun onResponse(call: Call<SyncResponse>, response: Response<SyncResponse>) {
-                    if (response.errorBody() != null && !response.isSuccessful()) {
-                        try {
-                            Log.e(TAG, response.errorBody()!!.string())
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-
-                    }
-                }
-
-                override fun onFailure(call: Call<SyncResponse>, t: Throwable) {
-                    if (t.stackTrace != null) {
-                        Log.e(TAG, "error")
-                        t.printStackTrace()
-                    } else {
-                        Log.e(TAG, "update to server response error")
-                    }
-                }
-            })
+            val disposable = api.refreshToServer(updateToServer)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            { result -> Log.e(TAG, result.status) },
+                            { error -> error.printStackTrace() }
+                    )
         }
 
         @JvmStatic fun sync(path: String) {

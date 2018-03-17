@@ -6,7 +6,13 @@ import android.support.annotation.Nullable
 /**
  * Created by efraespada on 14/03/2018.
  */
-abstract class Reference<T> {
+abstract class Reference<T>(clazz: Class<T>) {
+
+    val clazz: Class<T>
+
+    init {
+        this.clazz = clazz
+    }
 
     abstract fun onCreate()
 
@@ -17,8 +23,8 @@ abstract class Reference<T> {
 
     abstract fun progress(value: Int)
 
-    inline fun <reified T : Any> clazz() : Class<T> {
-        return T::class.java
+    fun clazz() : Class<T> {
+        return clazz
     }
 
 }
