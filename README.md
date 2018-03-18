@@ -42,6 +42,28 @@ Database.initialize()
 Rotor Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
 For that we have `Database.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
 
+```kotlin
+// kotlin
+Database.listen(path, object: Reference<T>(T::class.java) {
+    override fun onCreate() {
+        objectA = ObjectA("foo")
+        Database.sync(path);
+    }
+ 
+    override fun onUpdate(): T ? {
+        return T
+    }
+ 
+    override fun onChanged(ref: T) {
+        
+    }
+ 
+    override fun progress(value: Int) {
+        
+    }
+})
+```
+
 ### onCreate
 Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
 ```java
