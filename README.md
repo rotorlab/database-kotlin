@@ -82,7 +82,7 @@ Database.sync("myObjects/objectA");
 ```
 Remove listener in server by calling `Database.removeListener(path)`
 ```java
-Database.removeListener("myObjects/objectA");
+Database.unlisten("myObjects/objectA");
 ```
 Samples:
 ```java
