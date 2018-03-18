@@ -1,4 +1,4 @@
-package com.flamebase.chappykotlin
+package com.rocketbase.database
 
 import org.junit.Test
 

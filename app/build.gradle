@@ -1,18 +1,19 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.flamebase.chappykotlin"
-        minSdkVersion 21
+        applicationId "com.rotor.sample"
+        minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName rotor_version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "database_url", "\"http://10.0.2.2:1507/\""
+        buildConfigField "String", "redis_url", "\"redis://10.0.2.2\""
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -30,4 +31,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation "com.rotor:core:$rotor_version"
+    //implementation "com.rotor:database:$rotor_version"
+    // implementation project(":core")
+    implementation project(":database")
+    implementation 'com.google.code.gson:gson:2.8.2'
+
 }
