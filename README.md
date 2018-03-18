@@ -40,7 +40,7 @@ Database.initialize()
 ```
 ## Listen shared object changes
 Rotor Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
-For that we have `Database.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
+For that we have `Database.listen(...)` method which has a simple **object lifecycle interface** for control every object state.
 
 ```kotlin
 // kotlin
@@ -91,11 +91,11 @@ public void progress(int value) {
     Log.e(TAG, "loading " + path + " : " + value + " %");
 }
 ```
-After work with objects, changes must be synchronized with servers. Call `Database.sync(path)` method to sync it.
+After work with objects, changes must be synchronized with servers. Call `Database.sync(path: String)` method to sync it.
 ```java
 Database.sync("myObjects/objectA");
 ```
-Remove listener in server by calling `Database.unlisten(path)`
+Remove listener in server by calling `Database.unlisten(path: String)`
 ```java
 Database.unlisten("myObjects/objectA");
 ```
