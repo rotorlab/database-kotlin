@@ -5,7 +5,7 @@ Rotor Database is a complementary module for Rotor Core (kotlin). It allows to w
 
 Forget things like swipe-to-refresh events, lots of server requests and object storage management. Why? 
 
-Rotor Database philosophy states that the only needed requests are those that change data on remote database. That means that the rest of requests you are imaging (give me updates, give updates, give me updates) are replaced now. How?
+**Rotor Database philosophy** states that the only needed requests are those that change data on remote database. That means that the rest of requests you are imaging (give me updates, give updates, give me updates) are replaced now. How?
 
 Rotor Core is connected to Rotor and Redis servers. The first one controls object sharing queues, devices waiting for changes and all data edition on remote database. The second (as you probably know) gives us Pub/Sub messaging pattern for data changes replication.
 
@@ -38,10 +38,11 @@ Rotor.initialize(...)
 Database.initialize()
 ```
 ## Listen shared object changes
-Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
-For that we have `Databas.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
+Rotor Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
+For that we have `Database.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
 
-- onCreate: Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
+### onCreate
+Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
 ```java
 @Override
 public void onCreate() {
@@ -49,7 +50,8 @@ public void onCreate() {
     Database.sync(path);
 }
 ```
-- onChanged: Called in two situations, when some device has made changes on the same object and when `listen` method is called and the object is cached. Database library pass the object up to date as parameter.
+### onChanged
+Called in two situations, when some device has made changes on the same object and when `listen` method is called and the object is cached. Database library pass the object up to date as parameter.
 ```java
 @Override
 public void onChanged(ObjectA objectA) {
@@ -57,14 +59,16 @@ public void onChanged(ObjectA objectA) {
     // notify change on UI
 }
 ```
-- onUpdate: Called when `sync` method is invoked. Differences with the last "fresh" object passed by library are calculated and sent to server.
+### onUpdate
+Called when `sync` method is invoked. Differences with the last "fresh" object passed by library are calculated and sent to server.
 ```java
 @Override
 public ObjectA onUpdate() {
     return objectA;
 }
 ```
-- progress: Some object updates can become too big, so server slices updates and sends them sequentially. value parameter goes from 0 to 100
+### progress
+Some object updates can become too big, so server slices updates and sends them sequentially. value parameter goes from 0 to 100
 ```java
 @Override
 public void progress(int value) {
@@ -77,7 +81,7 @@ Database.sync("myObjects/objectA");
 ```
 Remove listener in server by calling `Database.removeListener(path)`
 ```java
-Database.removeListener(path);
+Database.removeListener("myObjects/objectA");
 ```
 Samples:
 ```java
