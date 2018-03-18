@@ -46,8 +46,7 @@ For that we have `Database.listen(...)` method which has an easy **object lifecy
 // kotlin
 Database.listen(path, object: Reference<T>(T::class.java) {
     override fun onCreate() {
-        objectA = ObjectA("foo")
-        Database.sync(path);
+        
     }
  
     override fun onUpdate(): T ? {
