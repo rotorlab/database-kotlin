@@ -95,7 +95,7 @@ After work with objects, changes must be synchronized with servers. Call `Databa
 ```java
 Database.sync("myObjects/objectA");
 ```
-Remove listener in server by calling `Database.removeListener(path)`
+Remove listener in server by calling `Database.unlisten(path)`
 ```java
 Database.unlisten("myObjects/objectA");
 ```
