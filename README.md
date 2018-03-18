@@ -44,27 +44,21 @@ For that we have `Database.listen(...)` method which has an easy **object lifecy
 
 ```kotlin
 // kotlin
-Database.listen(path, object: Reference<T>(T::class.java) {
-    override fun onCreate() {
-        
-    }
+Database.listen(path: String, object: Reference<T>(T::class.java) {
  
-    override fun onUpdate(): T ? {
-        return T
-    }
+    fun onCreate()
  
-    override fun onChanged(ref: T) {
-        
-    }
+    fun onUpdate(): T ?
  
-    override fun progress(value: Int) {
-        
-    }
+    fun onChanged(ref: T)
+ 
+    fun progress(value: Int)
+    
 })
 ```
 
 ### onCreate
-Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
+Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called instead.
 ```java
 @Override
 public void onCreate() {
@@ -108,7 +102,7 @@ Database.unlisten("myObjects/objectA");
 Samples:
 ```java
 // java
-
+ 
 class ObjectA {
     String value;
     public ObjectA(String value) {
@@ -152,7 +146,7 @@ Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
 
 ```kotlin
 // kotlin
-
+ 
 data class ObjectA(var value: String)
 var path = "myObjects/objectA"
 var objectA: ObjectA ? = null
