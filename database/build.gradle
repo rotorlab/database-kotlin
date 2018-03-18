@@ -45,7 +45,7 @@ dependencies {
     compile 'com.google.guava:guava:22.0-android'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile "com.stringcare:library:0.7"
-    compile "com.rotor:core:$rotor_version"
+    implementation "com.rotor:core:$rotor_version"
     compile 'com.google.code.gson:gson:2.8.2'
 }
 repositories {

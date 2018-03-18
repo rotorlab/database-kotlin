@@ -121,7 +121,7 @@ class Database  {
                     )
         }
 
-        @JvmStatic fun removeListener(path: String) {
+        @JvmStatic fun unlisten(path: String) {
             if (pathMap!!.containsKey(path)) {
                 val removeListener = RemoveListener("remove_listener", path, Rotor.id!!)
                 val disposable = api.removeListener(removeListener)

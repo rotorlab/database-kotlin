@@ -1,3 +1,4 @@
+[ ![Download](https://api.bintray.com/packages/efff/maven/RotorKotlinDatabase/images/download.svg) ](https://bintray.com/efff/maven/RotorKotlinDatabase/_latestVersion)
 <p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
 
 # Rotor Database
@@ -20,9 +21,9 @@ android {
         multiDexEnabled true
     }
 }
-
+ 
 def rotor_version =  "0.1.0"
-
+ 
 dependencies {
     implementation ("com.rotor:core:$rotor_version@aar") {
         transitive = true
