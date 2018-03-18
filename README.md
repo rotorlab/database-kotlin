@@ -10,7 +10,7 @@ Forget things like swipe-to-refresh events, lots of server requests and object s
 
 Rotor Core is connected to Rotor and Redis servers. The first one controls object sharing queues, devices waiting for changes and all data edition on remote database. The second (as you probably know) gives us Pub/Sub messaging pattern for data changes replication.
 
-Before use this lib, check out Rotor Core repo for its initialization.
+Before use this lib, check out [Rotor Core repo](https://github.com/rotorlab/core-kotlin) for its initialization.
 
 ## Implementation
 Import libraries:
@@ -40,31 +40,25 @@ Database.initialize()
 ```
 ## Listen shared object changes
 Rotor Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
-For that we have `Database.listen(...)` method which has an easy **object lifecycle interface** for control every object state.
+For that we have `Database.listen(...)` method which has a simple **object lifecycle interface** for control every object state.
 
 ```kotlin
 // kotlin
-Database.listen(path, object: Reference<T>(T::class.java) {
-    override fun onCreate() {
-        
-    }
+Database.listen(path: String, object: Reference<T>(T::class.java) {
  
-    override fun onUpdate(): T ? {
-        return T
-    }
+    fun onCreate()
  
-    override fun onChanged(ref: T) {
-        
-    }
+    fun onUpdate(): T ?
  
-    override fun progress(value: Int) {
-        
-    }
+    fun onChanged(ref: T)
+ 
+    fun progress(value: Int)
+    
 })
 ```
 
 ### onCreate
-Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called insted.
+Called when object is not created in remote DB yet. Object is defined and synchronized with server here. This method won't be called if object already exists on server, `onChange` method will be called instead.
 ```java
 @Override
 public void onCreate() {
@@ -97,18 +91,18 @@ public void progress(int value) {
     Log.e(TAG, "loading " + path + " : " + value + " %");
 }
 ```
-After work with objects, changes must be synchronized with servers. Call `Database.sync(path)` method to sync it.
+After work with objects, changes must be synchronized with servers. Call `Database.sync(path: String)` method to sync it.
 ```java
 Database.sync("myObjects/objectA");
 ```
-Remove listener in server by calling `Database.removeListener(path)`
+Remove listener in server by calling `Database.unlisten(path: String)`
 ```java
 Database.unlisten("myObjects/objectA");
 ```
 Samples:
 ```java
 // java
-
+ 
 class ObjectA {
     String value;
     public ObjectA(String value) {
@@ -152,7 +146,7 @@ Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
 
 ```kotlin
 // kotlin
-
+ 
 data class ObjectA(var value: String)
 var path = "myObjects/objectA"
 var objectA: ObjectA ? = null
