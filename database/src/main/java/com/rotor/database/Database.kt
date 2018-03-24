@@ -9,12 +9,14 @@ import com.rotor.database.abstr.Reference
 import com.rotor.database.models.KReference
 import com.rotor.database.models.PrimaryReferece
 import com.rotor.database.models.PrimaryReferece.Companion.ACTION_NEW_OBJECT
+import com.rotor.database.models.PrimaryReferece.Companion.ACTION_REFERENCE_REMOVED
 import com.rotor.database.models.PrimaryReferece.Companion.EMPTY_OBJECT
 import com.rotor.database.models.PrimaryReferece.Companion.NULL
 import com.rotor.database.models.PrimaryReferece.Companion.OS
 import com.rotor.database.models.PrimaryReferece.Companion.PATH
 import com.rotor.database.request.CreateListener
 import com.rotor.database.request.RemoveListener
+import com.rotor.database.request.RemoveReference
 import com.rotor.database.request.UpdateToServer
 import com.rotor.database.utils.ReferenceUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,7 +33,7 @@ class Database  {
     companion object {
 
         private val TAG: String = Database::class.java.simpleName!!
-        private var pathMap: HashMap<String, KReference<*>> ? = null
+        @JvmStatic private var pathMap: HashMap<String, KReference<*>> ? = null
         val api by lazy {
             ReferenceUtils.service(Rotor.urlServer!!)
         }
@@ -53,6 +55,11 @@ class Database  {
                                     if (pathMap!!.containsKey(path)) {
                                         val handler = Handler()
                                         handler.postDelayed({ sync(path) }, 200)
+                                    }
+                                } else if (ACTION_REFERENCE_REMOVED.equals(info)) {
+                                    if (pathMap!!.containsKey(path)) {
+                                        val handler = Handler()
+                                        handler.postDelayed({ removePrim(path) }, 200)
                                     }
                                 }
                             } else if (data.has(PATH)) {
@@ -83,14 +90,14 @@ class Database  {
 
             val blowerCreation = Date().time
 
-            if (pathMap!!.containsKey(path) && (Rotor.rotorService?.getMoment() as Long).equals(pathMap!!.get(path)!!.moment)) {
-                if (Rotor.debug!!) {
-                    Log.d(TAG, "Listener already added for: $path")
-                }
+            if (pathMap!!.containsKey(path)) {
+                Log.d(TAG, "Listener already added for: $path")
                 pathMap!![path]!!.addBlower(blowerCreation, reference)
                 pathMap!![path]!!.loadCachedReference()
                 return
             }
+
+            Log.d(TAG, "Creating reference: $path")
 
             val objectReference = KReference<T>(Rotor.context!!, path, reference, Rotor.rotorService!!.getMoment() as Long)
             pathMap!![path] = objectReference
@@ -110,25 +117,50 @@ class Database  {
             val sha1 = ""
 
 
-            val createListener = CreateListener("create_listener", path, Rotor.id!!, OS, sha1, content.length)
+            val createListener = CreateListener("listen_reference", path, Rotor.id!!, OS, sha1, content.length)
 
-            val disposable = api.createReference(createListener)
+            api.createReference(createListener)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            { result -> Log.e(TAG, result.status) },
+                            { result ->
+                                result.status?.let {
+                                    Log.e(TAG, result.status)
+                                }
+                            },
                             { error -> error.printStackTrace() }
                     )
         }
 
         @JvmStatic fun unlisten(path: String) {
             if (pathMap!!.containsKey(path)) {
-                val removeListener = RemoveListener("remove_listener", path, Rotor.id!!)
-                val disposable = api.removeListener(removeListener)
+                val removeListener = RemoveListener("unlisten_reference", path, Rotor.id!!)
+                api.removeListener(removeListener)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                { result -> Log.e(TAG, result.status) },
+                                { result ->
+                                    result.status?.let {
+                                        Log.e(TAG, result.status)
+                                    }
+                                },
+                                { error -> error.printStackTrace() }
+                        )
+            }
+        }
+
+        @JvmStatic fun remove(path: String) {
+            if (pathMap!!.containsKey(path)) {
+                val removeReference = RemoveReference("remove_reference", path, Rotor.id!!)
+                api.removeReference(removeReference)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result ->
+                                    result.status?.let {
+                                        Log.e(TAG, result.status)
+                                    }
+                                },
                                 { error -> error.printStackTrace() }
                         )
             }
@@ -142,12 +174,16 @@ class Database  {
                 Log.d(TAG, "differences: $differences")
             }
 
-            val updateToServer = UpdateToServer("update_data", path, Rotor.id!!, "android", differences, len, clean)
-            val disposable = api.refreshToServer(updateToServer)
+            val updateToServer = UpdateToServer("update_reference", path, Rotor.id!!, "android", differences, len, clean)
+            api.refreshToServer(updateToServer)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            { result -> Log.e(TAG, result.status) },
+                            { result ->
+                                result.status?.let {
+                                    Log.e(TAG, result.status)
+                                }
+                            },
                             { error -> error.printStackTrace() }
                     )
         }
@@ -170,6 +206,13 @@ class Database  {
                         blower.onCreate()
                     }
                 }
+            }
+        }
+
+        @JvmStatic fun removePrim(path: String) {
+            if (pathMap!!.containsKey(path)) {
+                pathMap!![path]!!.remove()
+                pathMap!!.remove(path)
             }
         }
     }

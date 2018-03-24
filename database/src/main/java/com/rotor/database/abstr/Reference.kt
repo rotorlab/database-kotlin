@@ -21,6 +21,8 @@ abstract class Reference<T>(clazz: Class<T>) {
 
     abstract fun onChanged(@NonNull ref: T)
 
+    abstract fun onDestroy()
+
     abstract fun progress(value: Int)
 
     fun clazz() : Class<T> {
