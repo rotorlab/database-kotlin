@@ -33,12 +33,15 @@ dependencies {
     }
 }
 ```
-Initialize database module after Rotor core initialization:
+Initialize database module after Rotor core initialization. Should be invoked on `LoadingActivity` or `SplashActivity`. :
 ```java
 Rotor.initialize(getApplicationContext(), "http://10.0.2.2:1507/", "redis://10.0.2.2", new StatusListener() {
     @Override
     public void connected() {
          Database.initialize()
+         
+         // login - main UI
+         // start listen references
     }
     
     @Override
