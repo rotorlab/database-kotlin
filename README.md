@@ -22,7 +22,7 @@ android {
     }
 }
  
-def rotor_version =  "0.1.0"
+def rotor_version =  "0.1.1"
  
 dependencies {
     implementation ("com.rotor:core:$rotor_version@aar") {
@@ -35,8 +35,17 @@ dependencies {
 ```
 Initialize database module after Rotor core initialization:
 ```java
-Rotor.initialize(...)
-Database.initialize()
+Rotor.initialize(getApplicationContext(), "http://10.0.2.2:1507/", "redis://10.0.2.2", new StatusListener() {
+    @Override
+    public void connected() {
+         Database.initialize()
+    }
+    
+    @Override
+    public void reconnecting() {
+         
+    }
+});
 ```
 ## Listen shared object changes
 Rotor Database allows devices to work with the same objects by listening the same `path`. When an object is listened, library says to Rotor server your device is waiting for changes on that `path`, so every time any device makes a change on that (object), the differences are calculated and replicated on all devices listening.
@@ -51,6 +60,8 @@ Database.listen(path: String, object: Reference<T>(T::class.java) {
     fun onUpdate(): T ?
  
     fun onChanged(ref: T)
+    
+    fun onDestroy()
  
     fun progress(value: Int)
     
@@ -83,6 +94,15 @@ public ObjectA onUpdate() {
     return objectA;
 }
 ```
+### onDestroy
+Called when `remove` method is invoked. Reference is removed on database too.
+```java
+@Override
+public void onDestroy() {
+    objectA = null;
+    // UI changes for removed object
+}
+```
 ### progress
 Some object updates can become too big, so server slices updates and sends them sequentially. value parameter goes from 0 to 100
 ```java
@@ -95,9 +115,13 @@ After work with objects, changes must be synchronized with servers. Call `Databa
 ```java
 Database.sync("myObjects/objectA");
 ```
-Remove listener in server by calling `Database.unlisten(path: String)`
+Remove listener in server by calling `Database.unlisten(path: String)`.
 ```java
 Database.unlisten("myObjects/objectA");
+```
+Remove reference in database by calling `Database.remove(path: String)`. `onDestroy` will be called.
+```java
+Database.remove("myObjects/objectA");
 ```
 Samples:
 ```java
@@ -136,6 +160,12 @@ Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
     public ObjectA onUpdate() {
         return objectA;
     }
+    
+    @Override
+    public void onDestroy() {
+        objectA = null;
+        // UI changes for removed object
+    }
  
     @Override
     public void progress(int value) {
@@ -157,12 +187,17 @@ Database.listen(path, object: Reference<ObjectA>(ObjectA::class.java) {
     }
  
     override fun onUpdate(): ObjectA ? {
-        return objectA
+        return this@MainActivity.objectA
     }
  
     override fun onChanged(ref: ObjectA) {
-        this@MainActivity.objectA = objectA
+        this@MainActivity.objectA = ref
         // notify change on UI
+    }
+    
+    override fun onDestroy() {
+        this@MainActivity.objectA = null;
+        // UI changes for removed object
     }
  
     override fun progress(value: Int) {

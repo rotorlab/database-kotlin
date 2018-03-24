@@ -50,7 +50,7 @@ class KReference<T>(context: Context, path: String, reference: Reference<*>, mom
                 value = EMPTY_OBJECT
             }
         } else {
-            value = gson.toJson(getLastest().onUpdate(), TypeToken.of(clazz).type)
+            value = gson.toJson(getLastest().onUpdate(), clazz)
         }
         return value!!
     }
@@ -65,6 +65,13 @@ class KReference<T>(context: Context, path: String, reference: Reference<*>, mom
     override fun blowerResult(value: String) {
         for (entry in blowerMap.entries) {
             entry.value.onChanged(gson.fromJson(value, getType()))
+        }
+    }
+
+    override fun remove() {
+        ReferenceUtils.removeElement(path)
+        for (entry in blowerMap.entries) {
+            entry.value.onDestroy()
         }
     }
 

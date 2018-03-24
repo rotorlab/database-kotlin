@@ -27,4 +27,8 @@ interface Server {
     @POST("/")
     fun refreshToServer(@Body updateToServer: UpdateToServer) : Observable<SyncResponse>
 
+    @Headers("Content-Type: application/json")
+    @POST("/")
+    fun removeReference(@Body removeReference: RemoveReference) : Observable<SyncResponse>
+
 }

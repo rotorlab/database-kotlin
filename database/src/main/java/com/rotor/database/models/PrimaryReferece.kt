@@ -28,6 +28,7 @@ abstract class PrimaryReferece<T>(context: Context, path: String) {
         internal var ACTION_SLICE_CONTENT = "slice_content"
         internal var ACTION_NO_CONTENT = "no_content"
         internal var ACTION_NEW_OBJECT = "new_object"
+        internal var ACTION_REFERENCE_REMOVED = "reference_removed"
         internal var STAG = "tag"
         internal var PATH = "id"
         internal var REFERENCE = "reference"
@@ -85,6 +86,11 @@ abstract class PrimaryReferece<T>(context: Context, path: String) {
      * @return String
      */
     abstract fun getReferenceAsString(): String
+
+    /**
+     * removes cached reference
+     */
+    abstract fun remove()
 
     /**
      * loads stored JSON object on db. if not exists,
