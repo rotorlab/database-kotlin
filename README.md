@@ -53,7 +53,7 @@ For that we have `Database.listen(...)` method which has a simple **object lifec
 
 ```kotlin
 // kotlin
-Database.listen(path: String, object: Reference<T>(T::class.java) {
+Reference<T>(T::class.java) {
  
     fun onCreate()
  
@@ -65,7 +65,7 @@ Database.listen(path: String, object: Reference<T>(T::class.java) {
  
     fun progress(value: Int)
     
-})
+}
 ```
 
 ### onCreate
