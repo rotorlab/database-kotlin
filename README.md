@@ -53,7 +53,7 @@ For that we have `Database.listen(...)` method which has a simple **object lifec
 
 ```kotlin
 // kotlin
-Reference<T>(T::class.java) {
+Database.listen(path: String, Reference<T>(T::class.java) {
  
     fun onCreate()
  
@@ -65,7 +65,7 @@ Reference<T>(T::class.java) {
  
     fun progress(value: Int)
     
-}
+})
 ```
 
 ### onCreate
@@ -182,7 +182,7 @@ var path = "myObjects/objectA"
 var objectA: ObjectA ? = null
 Database.listen(path, object: Reference<ObjectA>(ObjectA::class.java) {
     override fun onCreate() {
-        objectA = ObjectA("foo")
+        this@MainActivity.objectA = ObjectA("foo")
         Database.sync(path);
     }
  
