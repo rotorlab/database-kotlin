@@ -5,5 +5,6 @@ package com.rotor.database.request
  */
 
 data class RemoveReference(val method: String,
+                           val database: String,
                            val path: String,
                            val token: String)

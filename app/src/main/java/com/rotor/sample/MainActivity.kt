@@ -31,7 +31,10 @@ class MainActivity : AppCompatActivity() {
 
         Database.initialize()
 
-        Database.listen("chat", object: Reference<Chat>(Chat::class.java) {
+        Database.listen("database", "/chat", object: Reference<Chat>(Chat::class.java) {
+            override fun onDestroy() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
 
             override fun onCreate() {
 
@@ -51,7 +54,11 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        Database.listen("", object: Reference<ObjectA>(ObjectA::class.java) {
+        Database.listen("database","/object", object: Reference<ObjectA>(ObjectA::class.java) {
+            override fun onDestroy() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
             override fun onCreate() {
                 objectA = ObjectA("foo")
             }

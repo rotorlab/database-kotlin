@@ -1,6 +1,8 @@
 [ ![Download](https://api.bintray.com/packages/efff/maven/RotorKotlinDatabase/images/download.svg) ](https://bintray.com/efff/maven/RotorKotlinDatabase/_latestVersion)
-<p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/develop/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
-
+<p align="center"><img width="10%" vspace="20" src="https://github.com/rotorlab/database-kotlin/raw/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"></p>
+ 
+Before use this library, [Rotor Core](https://github.com/rotorlab/core-kotlin) must be initialized. Lastest version is always the same on all Rotor libs.
+ 
 # Rotor Database
 Rotor Database is a complementary module for Rotor Core (kotlin). It allows to work with shared (Java) objects between many devices offering users real time changes and better mobile data consumption. 
 
@@ -9,8 +11,6 @@ Forget things like swipe-to-refresh events, lots of server requests and object s
 **Rotor Database philosophy** states that the only needed requests are those that change data on remote database. That means that the rest of requests you are imaging (give me updates, give updates, give me updates) are replaced now. How?
 
 Rotor Core is connected to Rotor and Redis servers. The first one controls object sharing queues, devices waiting for changes and all data edition on remote database. The second (as you probably know) gives us Pub/Sub messaging pattern for data changes replication.
-
-Before use this lib, check out [Rotor Core repo](https://github.com/rotorlab/core-kotlin) for its initialization.
 
 ## Implementation
 Import libraries:
@@ -22,7 +22,7 @@ android {
     }
 }
  
-def rotor_version =  "0.1.1"
+def rotor_version =  "0.2"
  
 dependencies {
     implementation ("com.rotor:core:$rotor_version@aar") {
@@ -35,7 +35,7 @@ dependencies {
 ```
 Initialize database module after Rotor core initialization. Should be invoked on `LoadingActivity` or `SplashActivity`. :
 ```java
-Rotor.initialize(getApplicationContext(), "http://10.0.2.2:1507/", "redis://10.0.2.2", new StatusListener() {
+Rotor.initialize(getApplicationContext(), "http://10.0.2.2:1508/", "redis://10.0.2.2", new StatusListener() {
     @Override
     public void connected() {
          Database.initialize()
@@ -56,7 +56,7 @@ For that we have `Database.listen(...)` method which has a simple **object lifec
 
 ```kotlin
 // kotlin
-Database.listen(path: String, Reference<T>(T::class.java) {
+Database.listen(database: String, path: String, Reference<T>(T::class.java) {
  
     fun onCreate()
  
@@ -128,9 +128,10 @@ Database.remove("myObjects/objectA");
 ```
 Samples:
 ```java
-// java
- 
+
 class ObjectA {
+    @SerializedName("value")
+    @Expose
     String value;
     public ObjectA(String value) {
         this.value = value;
@@ -143,10 +144,11 @@ class ObjectA {
     }
 }
  
-String path = "myObjects/objectA";
+String database = "database";
+String path = "/myObjects/objectA";
 ObjectA objectA = null;
   
-Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
+Database.listen(database, path, new Reference<ObjectA>(ObjectA.class) {
     @Override
     public void onCreate() {
         objectA = new ObjectA("foo");
@@ -175,38 +177,6 @@ Database.listen(path, new Reference<ObjectA>(ObjectA.class) {
         Log.e(TAG, "loading " + path + " : " + value + " %");
     }
 });
-```
-
-```kotlin
-// kotlin
- 
-data class ObjectA(var value: String)
-var path = "myObjects/objectA"
-var objectA: ObjectA ? = null
-Database.listen(path, object: Reference<ObjectA>(ObjectA::class.java) {
-    override fun onCreate() {
-        this@MainActivity.objectA = ObjectA("foo")
-        Database.sync(path);
-    }
- 
-    override fun onUpdate(): ObjectA ? {
-        return this@MainActivity.objectA
-    }
- 
-    override fun onChanged(ref: ObjectA) {
-        this@MainActivity.objectA = ref
-        // notify change on UI
-    }
-    
-    override fun onDestroy() {
-        this@MainActivity.objectA = null;
-        // UI changes for removed object
-    }
- 
-    override fun progress(value: Int) {
-        Log.e("rotor", "loading " + path + " -> " + value + " %")
-    }
-})
 ```
 
 License

@@ -5,6 +5,7 @@ package com.rotor.database.request
  */
 
 data class CreateListener(val method: String,
+                          val database: String,
                           val path: String,
                           val token: String,
                           val os: String,

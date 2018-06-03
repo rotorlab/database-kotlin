@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 /**
  * Created by efraespada on 14/03/2018.
  */
-class KReference<T>(context: Context, path: String, reference: Reference<*>, moment: Long) : PrimaryReferece<Reference<T>>(context, path) {
+class KReference<T>(context: Context, database: String, path: String, reference: Reference<*>, moment: Long) : PrimaryReferece<Reference<T>>(context, database, path) {
 
     private val clazz: Class<T>
 
@@ -73,6 +73,7 @@ class KReference<T>(context: Context, path: String, reference: Reference<*>, mom
         for (entry in blowerMap.entries) {
             entry.value.onDestroy()
         }
+
     }
 
     fun getType(): Type {
