@@ -5,9 +5,10 @@ package com.rotor.database.request
  */
 
 data class UpdateToServer( val method: String,
-                      val path: String,
-                      val token: String,
-                      val os: String,
-                      val differences: String,
-                      val len: Int,
-                      val clean: Boolean)
+                           val database: String,
+                           val path: String,
+                           val token: String,
+                           val os: String,
+                           val differences: String,
+                           val len: Int,
+                           val clean: Boolean)
