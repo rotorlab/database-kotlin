@@ -5,9 +5,7 @@
 
 -----------------------------
 > Before use this library, [Rotor Core](https://github.com/rotorlab/core-kotlin) must be initialized. Lastest version is always the same for all Rotor libs.
-
-Welcome to the **Rotor Database Android library - wiki**, here you'll find all information about the implementation and use of Rotor Database library.
-
+ 
 [Wiki](https://github.com/rotorlab/database-kotlin/wiki)
 
 [Get Started](https://github.com/rotorlab/database-kotlin/wiki/Get-Started)
